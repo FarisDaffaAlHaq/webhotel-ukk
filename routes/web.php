@@ -2,6 +2,9 @@
 // untuk mengambil/menggunakan controller
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\KamarController;
@@ -65,12 +68,32 @@ Route::get('/auth.passwords.change-password','ubahpassword')->middleware('auth')
 Route::post('/update/password','changepassword')->middleware('auth');
 });
 
+Auth::routes(['verify' => true]);
 Route::controller(HomeController::class)->group(function(){
-Auth::routes();
 Route::get('admin.admin','index')->name('admin')->middleware('checkRole:admin');
 Route::get('resepsionis.resepsionis','index')->name('resepsionis')->middleware('checkRole:resepsionis');
-Route::get('tamu.home', 'index')->name('home')->middleware('checkRole:tamu');
+Route::get('tamu.home', 'index')->name('home')->middleware(['auth', 'verified', 'checkRole:tamu']);
 });
+
+// Tampilkan halaman notice
+Route::get('/email/verify', function () {
+    return view('auth.verify');
+})->middleware('auth')->name('verification.notice');
+
+// Proses verifikasi dari link email
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+
+    // redirect setelah verifikasi berhasil
+    return redirect('/');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+// Kirim ulang link verifikasi
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+
+    return back()->with('message', 'Link verifikasi telah dikirim ulang!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 Route::middleware('auth','checkRole:admin')->group(function(){
 Route::controller(UserController::class)->group(function(){

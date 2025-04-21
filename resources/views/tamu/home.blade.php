@@ -51,11 +51,11 @@
                             <a href="/auth.passwords.change-password" class="nav-link">Ubah Password</a>
                         @endif
                     </li>
-                    {{-- <li class="nav-item">
+                    <!-- {{-- <li class="nav-item">
                         @if (Auth::user()->role == 'tamu')
                         <a class="nav-link" href="/tamu/buktibooking">Cetak Pembayaran</a>
                         @endif
-                    </li> --}}
+                    </li> --}} -->
             </ul>
         </div>
     </nav>
@@ -110,7 +110,6 @@
                                         <button type="submit" class="btn btn-danger">Batalkan</button>
                                     </form>
 
-                                    {{-- Tombol Cetak --}}
                                     @if (Auth::user()->role == 'tamu')
                                         <a href="/tamu/buktibooking" class="btn btn-success">
                                             Cetak Pembayaran
@@ -127,10 +126,7 @@
                 @endforelse
             </tbody>
         </table>
-
         <hr>
-
-        {{-- Tabel Bukti Pembayaran --}}
         <h2 class="text-center">Bukti Pembayaran</h2>
         <p class="text-center">Bukti yang digunakan untuk melakukan pembayaran saat memesan kamar</p>
         
